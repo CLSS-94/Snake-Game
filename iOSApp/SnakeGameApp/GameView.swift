@@ -1,8 +1,10 @@
+import AVFoundation
 import SwiftUI
 
 struct GameView: View {
     @State private var engine = SnakeGameEngine(width: 20, height: 14)
     @State private var timer = Timer.publish(every: 0.18, on: .main, in: .common).autoconnect()
+    @StateObject private var soundPlayer = SoundPlayer()
 
     var body: some View {
         GeometryReader { proxy in
@@ -33,7 +35,18 @@ struct GameView: View {
         }
         .foregroundStyle(.black)
         .onReceive(timer) { _ in
+            let previousScore = engine.score
+            let previousStatus = engine.status
+
             engine.tick()
+
+            if engine.score > previousScore {
+                soundPlayer.play(.eat)
+            }
+
+            if previousStatus == .running && engine.status == .gameOver {
+                soundPlayer.play(.gameOver)
+            }
         }
     }
 
@@ -179,4 +192,35 @@ private struct LayoutMetrics {
 private extension Color {
     static let gameBackground = Color(red: 0.78, green: 0.92, blue: 0.22)
     static let boardBackground = Color(red: 0.69, green: 0.84, blue: 0.16)
+}
+
+private final class SoundPlayer: ObservableObject {
+    enum Effect: String, CaseIterable {
+        case eat = "comeu"
+        case gameOver = "fimdejogo"
+    }
+
+    private var players: [Effect: AVAudioPlayer] = [:]
+
+    init() {
+        for effect in Effect.allCases {
+            guard let url = Bundle.main.url(forResource: effect.rawValue, withExtension: "mp3") else {
+                continue
+            }
+
+            do {
+                let player = try AVAudioPlayer(contentsOf: url)
+                player.prepareToPlay()
+                players[effect] = player
+            } catch {
+                assertionFailure("Unable to load sound effect \(effect.rawValue).mp3")
+            }
+        }
+    }
+
+    func play(_ effect: Effect) {
+        guard let player = players[effect] else { return }
+        player.currentTime = 0
+        player.play()
+    }
 }

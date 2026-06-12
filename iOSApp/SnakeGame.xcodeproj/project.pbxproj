@@ -13,6 +13,8 @@
 		2D2DDB1E2C1A000100000001 /* GameStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2DDB0D2C1A000100000001 /* GameStatus.swift */; };
 		2D2DDB1F2C1A000100000001 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2DDB0E2C1A000100000001 /* Point.swift */; };
 		2D2DDB202C1A000100000001 /* SnakeGameEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2DDB0F2C1A000100000001 /* SnakeGameEngine.swift */; };
+		2D2DDB242C1A000100000001 /* comeu.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2D2DDB222C1A000100000001 /* comeu.mp3 */; };
+		2D2DDB252C1A000100000001 /* fimdejogo.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2D2DDB232C1A000100000001 /* fimdejogo.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +25,8 @@
 		2D2DDB0D2C1A000100000001 /* GameStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GameStatus.swift; path = ../Sources/SnakeGameCore/GameStatus.swift; sourceTree = SOURCE_ROOT; };
 		2D2DDB0E2C1A000100000001 /* Point.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Point.swift; path = ../Sources/SnakeGameCore/Point.swift; sourceTree = SOURCE_ROOT; };
 		2D2DDB0F2C1A000100000001 /* SnakeGameEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SnakeGameEngine.swift; path = ../Sources/SnakeGameCore/SnakeGameEngine.swift; sourceTree = SOURCE_ROOT; };
+		2D2DDB222C1A000100000001 /* comeu.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = comeu.mp3; sourceTree = "<group>"; };
+		2D2DDB232C1A000100000001 /* fimdejogo.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = fimdejogo.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,8 +62,18 @@
 			children = (
 				2D2DDB0A2C1A000100000001 /* SnakeGameApp.swift */,
 				2D2DDB0B2C1A000100000001 /* GameView.swift */,
+				2D2DDB212C1A000100000001 /* Resources */,
 			);
 			path = SnakeGameApp;
+			sourceTree = "<group>";
+		};
+		2D2DDB212C1A000100000001 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2D2DDB222C1A000100000001 /* comeu.mp3 */,
+				2D2DDB232C1A000100000001 /* fimdejogo.mp3 */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		2D2DDB102C1A000100000001 /* SnakeGameCore */ = {
@@ -131,6 +145,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D2DDB242C1A000100000001 /* comeu.mp3 in Resources */,
+				2D2DDB252C1A000100000001 /* fimdejogo.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
