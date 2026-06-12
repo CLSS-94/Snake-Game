@@ -2,6 +2,8 @@ import AVFoundation
 import SwiftUI
 
 struct GameView: View {
+    @AppStorage("snakeHighScore") private var highScore = 0
+
     @State private var engine = SnakeGameEngine(width: 20, height: 14)
     @State private var speedLevel = SpeedLevel.medium
     @State private var showingStartScreen = true
@@ -49,6 +51,7 @@ struct GameView: View {
             engine.tick()
 
             if engine.score > previousScore {
+                updateHighScore()
                 soundPlayer.play(.eat)
             }
 
@@ -74,6 +77,9 @@ struct GameView: View {
                 speedPicker(fontSize: metrics.statusFontSize)
             }
             .font(.system(size: metrics.headerFontSize, weight: .bold, design: .monospaced))
+
+            Text("REC \(formattedScore(highScore))")
+                .font(.system(size: metrics.headerFontSize, weight: .bold, design: .monospaced))
 
             VStack(spacing: 6) {
                 Text("SETAS MEXEM")
@@ -121,7 +127,7 @@ struct GameView: View {
             Spacer()
             Text(speedLevel.shortTitle)
             Spacer()
-            Text("LEN \(engine.snake.count)")
+            Text("REC \(formattedScore(highScore))")
         }
         .font(.system(size: fontSize, weight: .bold, design: .monospaced))
         .padding(.horizontal, 12)
@@ -218,6 +224,15 @@ struct GameView: View {
 
     private func updateTimer() {
         timer = Timer.publish(every: speedLevel.tickInterval, on: .main, in: .common).autoconnect()
+    }
+
+    private func updateHighScore() {
+        guard engine.score > highScore else { return }
+        highScore = engine.score
+    }
+
+    private func formattedScore(_ score: Int) -> String {
+        String(format: "%04d", score)
     }
 }
 
