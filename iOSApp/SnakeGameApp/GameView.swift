@@ -3,7 +3,9 @@ import SwiftUI
 
 struct GameView: View {
     @State private var engine = SnakeGameEngine(width: 20, height: 14)
-    @State private var timer = Timer.publish(every: 0.18, on: .main, in: .common).autoconnect()
+    @State private var speedLevel = SpeedLevel.medium
+    @State private var showingStartScreen = true
+    @State private var timer = Timer.publish(every: SpeedLevel.medium.tickInterval, on: .main, in: .common).autoconnect()
     @StateObject private var soundPlayer = SoundPlayer()
 
     var body: some View {
@@ -14,27 +16,33 @@ struct GameView: View {
                 Color.gameBackground
                     .ignoresSafeArea()
 
-                VStack(spacing: metrics.sectionSpacing) {
-                    header(fontSize: metrics.headerFontSize)
-                        .frame(height: metrics.headerHeight)
+                if showingStartScreen {
+                    startScreen(metrics: metrics)
+                } else {
+                    VStack(spacing: metrics.sectionSpacing) {
+                        header(fontSize: metrics.headerFontSize)
+                            .frame(height: metrics.headerHeight)
 
-                    board(lineWidth: metrics.boardLineWidth)
-                        .aspectRatio(boardAspectRatio, contentMode: .fit)
-                        .frame(maxWidth: metrics.boardWidth)
-                        .frame(height: metrics.boardHeight)
+                        board(lineWidth: metrics.boardLineWidth)
+                            .aspectRatio(boardAspectRatio, contentMode: .fit)
+                            .frame(maxWidth: metrics.boardWidth)
+                            .frame(height: metrics.boardHeight)
 
-                    controls(buttonSize: metrics.controlButtonSize)
+                        controls(buttonSize: metrics.controlButtonSize)
 
-                    statusButton(fontSize: metrics.statusFontSize)
+                        statusButton(fontSize: metrics.statusFontSize)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.horizontal, metrics.horizontalPadding)
+                    .padding(.top, metrics.topPadding)
+                    .padding(.bottom, metrics.bottomPadding)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(.horizontal, metrics.horizontalPadding)
-                .padding(.top, metrics.topPadding)
-                .padding(.bottom, metrics.bottomPadding)
             }
         }
         .foregroundStyle(.black)
         .onReceive(timer) { _ in
+            guard !showingStartScreen else { return }
+
             let previousScore = engine.score
             let previousStatus = engine.status
 
@@ -54,9 +62,64 @@ struct GameView: View {
         CGFloat(engine.width) / CGFloat(engine.height)
     }
 
+    private func startScreen(metrics: LayoutMetrics) -> some View {
+        VStack(spacing: metrics.startScreenSpacing) {
+            Spacer(minLength: 0)
+
+            Text("SNAKE")
+                .font(.system(size: metrics.titleFontSize, weight: .black, design: .monospaced))
+
+            VStack(spacing: 8) {
+                Text("NIVEL")
+                speedPicker(fontSize: metrics.statusFontSize)
+            }
+            .font(.system(size: metrics.headerFontSize, weight: .bold, design: .monospaced))
+
+            VStack(spacing: 6) {
+                Text("SETAS MEXEM")
+                Text("NAO BATA")
+            }
+            .font(.system(size: metrics.statusFontSize, weight: .bold, design: .monospaced))
+
+            Button("COMEÇAR") {
+                startNewGame()
+            }
+            .font(.system(size: metrics.statusFontSize, weight: .bold, design: .monospaced))
+            .foregroundStyle(Color.gameBackground)
+            .padding(.horizontal, 22)
+            .padding(.vertical, 10)
+            .background(.black, in: Capsule())
+            .buttonStyle(.plain)
+
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, metrics.horizontalPadding)
+        .padding(.top, metrics.topPadding)
+        .padding(.bottom, metrics.bottomPadding)
+    }
+
+    private func speedPicker(fontSize: CGFloat) -> some View {
+        HStack(spacing: 10) {
+            ForEach(SpeedLevel.allCases) { level in
+                Button(level.shortTitle) {
+                    speedLevel = level
+                    updateTimer()
+                }
+                .font(.system(size: fontSize, weight: .black, design: .monospaced))
+                .foregroundStyle(speedLevel == level ? Color.gameBackground : .black)
+                .frame(width: 40, height: 34)
+                .background(speedLevel == level ? .black : Color.boardBackground, in: Capsule())
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
     private func header(fontSize: CGFloat) -> some View {
         HStack {
             Text(String(format: "%04d", engine.score))
+            Spacer()
+            Text(speedLevel.shortTitle)
             Spacer()
             Text("LEN \(engine.snake.count)")
         }
@@ -119,7 +182,7 @@ struct GameView: View {
         Button(buttonTitle) {
             switch engine.status {
             case .ready, .gameOver:
-                engine.start()
+                startNewGame()
             case .running:
                 engine.pause()
             case .paused:
@@ -146,6 +209,41 @@ struct GameView: View {
             "FIM - RECOMEÇAR"
         }
     }
+
+    private func startNewGame() {
+        showingStartScreen = false
+        updateTimer()
+        engine.start()
+    }
+
+    private func updateTimer() {
+        timer = Timer.publish(every: speedLevel.tickInterval, on: .main, in: .common).autoconnect()
+    }
+}
+
+private enum SpeedLevel: Int, CaseIterable, Identifiable {
+    case slow = 1
+    case medium
+    case fast
+
+    var id: Int {
+        rawValue
+    }
+
+    var shortTitle: String {
+        "LV\(rawValue)"
+    }
+
+    var tickInterval: TimeInterval {
+        switch self {
+        case .slow:
+            0.24
+        case .medium:
+            0.18
+        case .fast:
+            0.12
+        }
+    }
 }
 
 private struct LayoutMetrics {
@@ -160,6 +258,8 @@ private struct LayoutMetrics {
     let boardWidth: CGFloat
     let boardHeight: CGFloat
     let boardLineWidth: CGFloat
+    let startScreenSpacing: CGFloat
+    let titleFontSize: CGFloat
 
     init(size: CGSize, safeAreaInsets: EdgeInsets) {
         let width = size.width
@@ -176,6 +276,8 @@ private struct LayoutMetrics {
         statusFontSize = min(max(width * 0.038, 14), 18)
         controlButtonSize = min(max(width * 0.105, 38), compactHeight ? 48 : 56)
         boardLineWidth = min(max(width * 0.01, 3), 5)
+        startScreenSpacing = compactHeight ? 18 : 26
+        titleFontSize = min(max(width * 0.15, 46), 72)
 
         let availableHeight = max(0, height - topPadding - bottomPadding)
         let controlsHeight = (controlButtonSize * 3) + (controlButtonSize * 0.32)
