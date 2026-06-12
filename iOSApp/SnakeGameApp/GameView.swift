@@ -102,6 +102,17 @@ struct GameView: View {
             .buttonStyle(.plain)
 
             Spacer(minLength: metrics.startScreenEdgeSpacing)
+
+            Text("CLSS 94")
+                .font(.system(size: metrics.brandFontSize, weight: .black, design: .monospaced))
+                .italic()
+                .kerning(2)
+                .foregroundStyle(Color.gameBackground)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 6)
+                .background(Color.brandBackground, in: Capsule())
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.horizontal, metrics.horizontalPadding)
@@ -375,6 +386,7 @@ private struct LayoutMetrics {
     let startScreenEdgeSpacing: CGFloat
     let highScoreTitleSpacing: CGFloat
     let titleFontSize: CGFloat
+    let brandFontSize: CGFloat
 
     init(size: CGSize, safeAreaInsets: EdgeInsets) {
         let width = size.width
@@ -405,6 +417,7 @@ private struct LayoutMetrics {
         startScreenEdgeSpacing = compactHeight ? 8 : 18
         highScoreTitleSpacing = compactHeight ? 8 : 12
         titleFontSize = min(max(width * 0.15, 46), 72)
+        brandFontSize = min(max(width * 0.032, 12), 15)
 
         let availableHeight = max(0, height - topPadding - bottomPadding)
         let statusHeight = actionButtonHeight
@@ -420,6 +433,7 @@ private struct LayoutMetrics {
 private extension Color {
     static let gameBackground = Color(red: 0.78, green: 0.92, blue: 0.22)
     static let boardBackground = Color(red: 0.69, green: 0.84, blue: 0.16)
+    static let brandBackground = Color(red: 0.18, green: 0.38, blue: 0.08)
 }
 
 private final class SoundPlayer: ObservableObject {

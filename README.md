@@ -22,15 +22,6 @@ Este repositório é um ponto de partida para criar um jogo da cobrinha simples 
 - Layout adaptável para diferentes tamanhos de iPhone.
 - Tela de fim de jogo com resumo curto de pontos e recorde.
 
-## Como abrir e testar no Xcode
-
-> Para compilar e rodar no iPhone ou simulador iOS, você precisa de um Mac com Xcode instalado.
-
-1. Abra `iOSApp/SnakeGame.xcodeproj` no Xcode.
-2. Escolha a scheme `SnakeGame`.
-3. Selecione um simulador de iPhone.
-4. Aperte **Run**.
-
-## Próximas melhorias sugeridas
+## O que ainda preciso fazer:
 
 - Controles por swipe, além dos botões.
