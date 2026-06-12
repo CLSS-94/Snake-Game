@@ -19,6 +19,8 @@ Este repositório é um ponto de partida para criar um jogo da cobrinha simples 
 - Efeito sonoro ao encerrar o jogo.
 - Botões direcionais na tela.
 - Botões para pausar/continuar e voltar ao menu.
+- Layout adaptável para diferentes tamanhos de iPhone.
+- Tela de fim de jogo com resumo curto de pontos e recorde.
 
 ## Como abrir e testar no Xcode
 
@@ -32,5 +34,3 @@ Este repositório é um ponto de partida para criar um jogo da cobrinha simples 
 ## Próximas melhorias sugeridas
 
 - Controles por swipe, além dos botões.
-- Ajustes finos de layout em diferentes tamanhos de iPhone.
-- Tela de fim de jogo mais polida, mantendo textos curtos.
