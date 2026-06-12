@@ -30,9 +30,9 @@ struct GameView: View {
                             .frame(maxWidth: metrics.boardWidth)
                             .frame(height: metrics.boardHeight)
 
-                        controls(buttonSize: metrics.controlButtonSize)
+                        controls(metrics: metrics)
 
-                        statusButton(fontSize: metrics.statusFontSize)
+                        gameActionButtons(fontSize: metrics.statusFontSize)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(.horizontal, metrics.horizontalPadding)
@@ -69,17 +69,19 @@ struct GameView: View {
         VStack(spacing: metrics.startScreenSpacing) {
             Spacer(minLength: 0)
 
-            Text("SNAKE")
-                .font(.system(size: metrics.titleFontSize, weight: .black, design: .monospaced))
+            VStack(spacing: metrics.highScoreTitleSpacing) {
+                Text("REC \(formattedScore(highScore))")
+                    .font(.system(size: metrics.headerFontSize, weight: .bold, design: .monospaced))
+
+                Text("SNAKE")
+                    .font(.system(size: metrics.titleFontSize, weight: .black, design: .monospaced))
+            }
 
             VStack(spacing: 8) {
                 Text("NIVEL")
                 speedPicker(fontSize: metrics.statusFontSize)
             }
             .font(.system(size: metrics.headerFontSize, weight: .bold, design: .monospaced))
-
-            Text("REC \(formattedScore(highScore))")
-                .font(.system(size: metrics.headerFontSize, weight: .bold, design: .monospaced))
 
             VStack(spacing: 6) {
                 Text("SETAS MEXEM")
@@ -162,26 +164,48 @@ struct GameView: View {
         }
     }
 
-    private func controls(buttonSize: CGFloat) -> some View {
-        VStack(spacing: buttonSize * 0.16) {
+    private func controls(metrics: LayoutMetrics) -> some View {
+        oneHandControls(size: metrics.controlsSize, buttonSize: metrics.controlButtonSize)
+        .frame(height: metrics.controlAreaHeight)
+    }
+
+    private func oneHandControls(size: CGFloat, buttonSize: CGFloat) -> some View {
+        ZStack {
+            Circle()
+                .fill(.black)
+                .frame(width: buttonSize * 0.34, height: buttonSize * 0.34)
+
             directionButton("▲", size: buttonSize) { engine.changeDirection(to: .up) }
-            HStack(spacing: buttonSize * 0.75) {
-                directionButton("◀", size: buttonSize) { engine.changeDirection(to: .left) }
-                directionButton("▶", size: buttonSize) { engine.changeDirection(to: .right) }
-            }
+                .offset(y: -size * 0.28)
+
             directionButton("▼", size: buttonSize) { engine.changeDirection(to: .down) }
+                .offset(y: size * 0.28)
+
+            directionButton("◀", size: buttonSize) { engine.changeDirection(to: .left) }
+                .offset(x: -size * 0.28)
+
+            directionButton("▶", size: buttonSize) { engine.changeDirection(to: .right) }
+                .offset(x: size * 0.28)
         }
+        .frame(width: size, height: size)
     }
 
     private func directionButton(_ title: String, size: CGFloat, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: size * 0.44, weight: .black, design: .monospaced))
+                .font(.system(size: size * 0.46, weight: .black, design: .monospaced))
                 .foregroundStyle(Color.gameBackground)
                 .frame(width: size, height: size)
                 .background(.black, in: Circle())
         }
         .buttonStyle(.plain)
+    }
+
+    private func gameActionButtons(fontSize: CGFloat) -> some View {
+        HStack(spacing: 12) {
+            statusButton(fontSize: fontSize)
+            menuButton(fontSize: fontSize)
+        }
     }
 
     private func statusButton(fontSize: CGFloat) -> some View {
@@ -194,6 +218,18 @@ struct GameView: View {
             case .paused:
                 engine.resume()
             }
+        }
+        .font(.system(size: fontSize, weight: .bold, design: .monospaced))
+        .foregroundStyle(.black)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(Color.boardBackground, in: Capsule())
+        .buttonStyle(.plain)
+    }
+
+    private func menuButton(fontSize: CGFloat) -> some View {
+        Button("MENU") {
+            returnToMenu()
         }
         .font(.system(size: fontSize, weight: .bold, design: .monospaced))
         .foregroundStyle(.black)
@@ -220,6 +256,11 @@ struct GameView: View {
         showingStartScreen = false
         updateTimer()
         engine.start()
+    }
+
+    private func returnToMenu() {
+        engine.reset()
+        showingStartScreen = true
     }
 
     private func updateTimer() {
@@ -270,10 +311,13 @@ private struct LayoutMetrics {
     let headerFontSize: CGFloat
     let statusFontSize: CGFloat
     let controlButtonSize: CGFloat
+    let controlsSize: CGFloat
+    let controlAreaHeight: CGFloat
     let boardWidth: CGFloat
     let boardHeight: CGFloat
     let boardLineWidth: CGFloat
     let startScreenSpacing: CGFloat
+    let highScoreTitleSpacing: CGFloat
     let titleFontSize: CGFloat
 
     init(size: CGSize, safeAreaInsets: EdgeInsets) {
@@ -289,15 +333,17 @@ private struct LayoutMetrics {
         headerHeight = compactHeight ? 24 : 30
         headerFontSize = min(max(width * 0.045, 16), 22)
         statusFontSize = min(max(width * 0.038, 14), 18)
-        controlButtonSize = min(max(width * 0.105, 38), compactHeight ? 48 : 56)
+        controlsSize = min(max(width * 0.34, 124), compactHeight ? 138 : 156)
+        controlButtonSize = controlsSize * 0.31
+        controlAreaHeight = controlsSize
         boardLineWidth = min(max(width * 0.01, 3), 5)
-        startScreenSpacing = compactHeight ? 18 : 26
+        startScreenSpacing = compactHeight ? 14 : 22
+        highScoreTitleSpacing = compactHeight ? 8 : 12
         titleFontSize = min(max(width * 0.15, 46), 72)
 
         let availableHeight = max(0, height - topPadding - bottomPadding)
-        let controlsHeight = (controlButtonSize * 3) + (controlButtonSize * 0.32)
         let statusHeight = statusFontSize + 18
-        let reservedHeight = headerHeight + controlsHeight + statusHeight + (sectionSpacing * 3)
+        let reservedHeight = headerHeight + controlAreaHeight + statusHeight + (sectionSpacing * 3)
         let maxBoardHeight = max(150, availableHeight - reservedHeight)
         let maxBoardWidth = width - (horizontalPadding * 2)
 

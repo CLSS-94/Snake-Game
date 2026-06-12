@@ -6,8 +6,19 @@ Este repositório é um ponto de partida para criar um jogo da cobrinha simples 
 
 - `Sources/SnakeGameCore`: regras do jogo em Swift puro, separadas da interface para facilitar testes.
 - `Tests/SnakeGameCoreTests`: testes automatizados da movimentação, colisão e estado inicial.
-- `iOSApp/SnakeGameApp`: telas SwiftUI para projeto iOS no Xcode.
+- `iOSApp/SnakeGameApp`: app iOS em SwiftUI, com visual verde monocromático inspirado no Snake clássico.
+- `iOSApp/SnakeGameApp/Resources`: efeitos sonoros usados ao comer comida e ao perder.
 - `Package.swift`: pacote Swift usado para validar a lógica principal fora do Xcode.
+
+## Funcionalidades
+
+- Tela inicial simples com seleção de nível.
+- Três velocidades: `LV1`, `LV2` e `LV3`.
+- Placar e recorde persistido localmente com `UserDefaults`.
+- Efeito sonoro ao comer comida.
+- Efeito sonoro ao encerrar o jogo.
+- Botões direcionais na tela.
+- Botões para pausar/continuar e voltar ao menu.
 
 ## Como abrir e testar no Xcode
 
@@ -20,8 +31,6 @@ Este repositório é um ponto de partida para criar um jogo da cobrinha simples 
 
 ## Próximas melhorias sugeridas
 
-- Sons curtos ao comer comida e ao perder.
-- Níveis de velocidade.
-- Tela inicial com instruções.
-- Persistência do recorde usando `UserDefaults`.
 - Controles por swipe, além dos botões.
+- Ajustes finos de layout em diferentes tamanhos de iPhone.
+- Tela de fim de jogo mais polida, mantendo textos curtos.
